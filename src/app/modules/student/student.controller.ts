@@ -1,11 +1,35 @@
 import { Request, Response } from "express";
 import { studentService } from "./student.service";
+import studentJoiValidationSchema from "./student.joi.validation";
+const Joi = require('joi');
+
 
 const createStudent = async (req:Request,res:Response)=>{
   try{
+
+
+
+
     const {student : studentData} = req.body;
+
+    const {error, value} = studentJoiValidationSchema.validate(studentData);
+
+
+    const result = await studentService.createStudentToDB(studentData)
+
+    // console.log({error},{ value});
+    // used for joi validation schema 
+    if(error){
+      res.status(500).json({
+        success: false,
+        message: 'something went wrong',
+        error: error.details,
+      });
+    }
+
+
+
   // will call the service function to send this data
-  const result = await studentService.createStudentToDB(studentData)
   // send response
   res.status(200).json({
     success: true,
@@ -14,7 +38,11 @@ const createStudent = async (req:Request,res:Response)=>{
   });
   } 
   catch(err){
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: 'something went wrong',
+      data: err
+    });
   }
 }
 
@@ -34,6 +62,7 @@ const getAllStudent = async (req: Request,res: Response)=>{
 }
 
 
+// get single student data from data
 const getSingleStudent = async (req: Request,res: Response)=>{
   try{
     const {studentId} = req.params;
