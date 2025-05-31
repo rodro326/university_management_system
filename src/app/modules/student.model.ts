@@ -1,7 +1,7 @@
 import { Schema, model, connect } from 'mongoose';
-import { Guardian, Student,  localGuardian, userName } from './student/student.interface';
+import { TGuardian, TStudent,  TlocalGuardian, TuserName, studentMethods, StudentModel } from './student/student.interface';
 
-const userNameSchema = new Schema<userName>({
+const userNameSchema = new Schema<TuserName>({
   
     fistName: {
       type: String,
@@ -17,7 +17,7 @@ const userNameSchema = new Schema<userName>({
   
 })
 
-const guardianSchema = new Schema <Guardian>(
+const guardianSchema = new Schema <TGuardian>(
   {
     fatherName:{
       type: String
@@ -40,7 +40,7 @@ const guardianSchema = new Schema <Guardian>(
   }
 )
 
-const localGuardianSchema = new Schema <localGuardian> (
+const localGuardianSchema = new Schema <TlocalGuardian> (
   {
     name: {
       type: String
@@ -57,7 +57,7 @@ const localGuardianSchema = new Schema <localGuardian> (
   }
 )
 
-const studentSchema = new Schema < Student> ({
+const studentSchema = new Schema < TStudent,studentMethods,StudentModel> ({
   id: {type: String, required: true, unique: true},
   name:{
     type: userNameSchema,
@@ -110,5 +110,9 @@ const studentSchema = new Schema < Student> ({
 })
 
 
+studentSchema.methods.isUserExits = async function(id:string){
+  const existingUser = await Student.findOne({id})
+  return existingUser;
+}
 // creating model
-export const StudentModel = model<Student>('Student',studentSchema)
+export const Student = model<TStudent,StudentModel>('Student',studentSchema)
