@@ -61,7 +61,7 @@ const localGuardianSchema = new Schema <TlocalGuardian> (
 
 const studentSchema = new Schema < TStudent,StudentModel> ({
   id: {type: String, required: true, unique: true},
-  password: {type: String, required: true, unique: true},
+  password: {type: String, required: true},
   name:{
     type: userNameSchema,
     required: true,
@@ -109,22 +109,43 @@ const studentSchema = new Schema < TStudent,StudentModel> ({
     type: String,
     enum:['Active','Inactive'],
     default: "Active"
+  },
+  isDeleted:{
+    type:Boolean,
+    default:false,
   }
 })
 
-
+// #Document middleware
 // pre save middleware 
 studentSchema.pre('save',async function (next){
   const user = this;
-  // console.log(this,'pre hook: we will save the data')
   // hashing password and then save into DB
   user.password =await bcrypt.hash(user.password,Number(config.bcrypt_salt_round));
   next();
 })
 
 // post save middleware 
-studentSchema.post('save',function(){
-  console.log(this,'post hook : we saved the data');
+studentSchema.post('save',function(doc,next){
+  doc.password = '';
+
+  next();
+})
+
+// #Query middleware
+studentSchema.pre('find',function(next){
+  this.find({isDeleted: {$ne:true}})
+  next();
+})
+
+studentSchema.pre('findOne',function(next){
+  this.find({isDeleted: {$ne:true}})
+  next();
+})
+
+studentSchema.pre('aggregate',function(next){
+  this.pipeline().unshift({$match:{isDeleted:{$ne: true}}})
+  next();
 })
 
 

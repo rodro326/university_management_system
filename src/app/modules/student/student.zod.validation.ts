@@ -45,5 +45,6 @@ export const studentZodSchema = z.object({
   localGuardian: localGuardianZodSchema,
   profileImg: z.string(),
   isActive: z.enum(['Active', 'Inactive']).default('Active'),
+  isDeleted:z.boolean(),
 });
 export default studentZodSchema;

@@ -42,6 +42,7 @@ export type TStudent = {
   localGuardian: TlocalGuardian;
   profileImg ?: string;
   isActive: 'Active' | 'Inactive';
+  isDeleted:boolean;
 }
 
 
