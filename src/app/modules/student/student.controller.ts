@@ -3,57 +3,6 @@ import { studentService } from "./student.service";
 import { z } from "zod";
 import   studentZodSchema from "./student.zod.validation";
  "./student.zod.validation";
-// import studentJoiValidationSchema from "./student.joi.validation";
-// const Joi = require('joi');
-
-
-const createStudent = async (req: Request, res: Response) => {
-  try {
-
-    const { student: studentData } = req.body;
-
-
-
-    const zodParseData = studentZodSchema.parse(studentData);
-
-    const result = await studentService.createStudentToDB(zodParseData)
-
-
-    // data validation by joi
-    // const {error, value} = studentJoiValidationSchema.validate(studentData);
-
-
-
-    // console.log({error},{ value});
-    // used for joi validation schema 
-    // if (error) {
-    //   res.status(500).json({
-    //     success: false,
-    //     message: 'something went wrong',
-    //     error: error.details,
-    //   });
-    // }
-
-
-
-    // will call the service function to send this data
-    // send response
-    res.status(200).json({
-      success: true,
-      message: 'student is created successfully',
-      data: result
-    });
-  }
-  catch (err :any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'something went wrong',
-      data: err
-    });
-  }
-}
-
-
 
 const getAllStudent = async (req: Request, res: Response) => {
   try {
@@ -114,7 +63,6 @@ const deleteSingleStudent = async (req: Request, res: Response) => {
 
 
 export const studentController = {
-  createStudent,
   getAllStudent,
   getSingleStudent,
   deleteSingleStudent

@@ -5,7 +5,7 @@ import { z } from 'zod';
 // Zod schemas
 
 const userNameZodSchema = z.object({
-  fistName: z.string({ required_error: "First Name is required" }),
+  firstName: z.string({ required_error: "First Name is required" }),
   middleName: z.string().optional(),
   lastName: z.string({ required_error: "Last Name is required" }),
 });

@@ -1,11 +1,10 @@
 import { Schema, model, connect } from 'mongoose';
 import { TGuardian, TStudent,  TlocalGuardian, TuserName, StudentModel } from './student/student.interface';
-import bcrypt from 'bcrypt';
-import config from '../config';
+
 
 const userNameSchema = new Schema<TuserName>({
   
-    fistName: {
+    firstName: {
       type: String,
       required:[true, "First Name is required"],
     },
@@ -60,12 +59,19 @@ const localGuardianSchema = new Schema <TlocalGuardian> (
 )
 
 const studentSchema = new Schema < TStudent,StudentModel> ({
-  id: {type: String, required: true, unique: true},
-  password: {type: String, required: true},
-  name:{
-    type: userNameSchema,
-    required: true,
+  id: {type: String, required: [true,'Id is required'], unique: true},
+  
+  user:{
+    type: Schema.Types.ObjectId,
+    required: [true,'userId required'],
+    unique: true,
+    ref:'User',
   },
+  name:{
+    type:userNameSchema,
+    required: [true,'name is required'],
+  },
+  
   gender:{
     type: String,
     enum:{
@@ -105,46 +111,23 @@ const studentSchema = new Schema < TStudent,StudentModel> ({
     required: true,
   },
   profileImg: {type: String},
-  isActive:{
-    type: String,
-    enum:['Active','Inactive'],
-    default: "Active"
-  },
+  
   isDeleted:{
     type:Boolean,
     default:false,
   }
 },{
   toJSON:{
-    virtuals: true
+    virtuals: true,
   }
 })
 
 // virtual
 studentSchema.virtual('fullName').get(function(){
   return (
-    `${this.name.fistName} ${this.name.middleName} ${this.name.lastName}`
+    `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
   )
 })
-
-// #Document middleware
-// pre save middleware 
-studentSchema.pre('save',async function (next){
-  const user = this;
-  // hashing password and then save into DB
-  user.password =await bcrypt.hash(user.password,Number(config.bcrypt_salt_round));
-  next();
-})
-
-// post save middleware 
-studentSchema.post('save',function(doc,next){
-  doc.password = '';
-
-  next();
-})
-
-
-
 
 // #Query middleware
 studentSchema.pre('find',function(next){
