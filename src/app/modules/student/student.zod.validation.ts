@@ -45,6 +45,7 @@ export const studentZodSchema = z.object({
     Guardian: guardianZodSchema,
     localGuardian: localGuardianZodSchema,
     profileImg: z.string(),
+    admissionSemester:z.string(),
    })
   })
 })

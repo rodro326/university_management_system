@@ -9,7 +9,7 @@ const createAcademicSemesterIntoDB =async (payload:TAcademicSemester) =>{
 
 
 
-
+  
 
     if(academicSemesterNameCodeMapper[payload.name]!== payload.code){
       throw new Error ('Invalid Semester Code');

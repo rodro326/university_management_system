@@ -1,10 +1,13 @@
 import config from "../../config";
+import { TAcademicSemester } from "../academicSemeter/academicSemester.interface";
+import { academicSemester } from "../academicSemeter/academicSemester.model";
 import { Student } from "../student.model";
 import { TStudent } from "../student/student.interface";
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
+import { generateStudentId } from "./user.utils";
 
-const createStudentToDB = async (password: string,studentData: TStudent)=>{
+const createStudentToDB = async (password: string,payload: TStudent)=>{
   // built in static method
   // if(await Student.isUserExist(studentData.id)){
   //   throw new Error('user already exits')
@@ -18,8 +21,14 @@ const createStudentToDB = async (password: string,studentData: TStudent)=>{
 
   userData.role = 'student';
 
+ 
+
+  // find academic semester info
+  const admissionSemester = await academicSemester.findById(payload.admissionSemester);
+
+
   // set manually generated id
-  userData.id = '22303025';
+  userData.id = generateStudentId(admissionSemester);
 
   // set student role
   const newUser = await User.create(userData);
@@ -27,10 +36,10 @@ const createStudentToDB = async (password: string,studentData: TStudent)=>{
   // create a student 
   if(Object.keys(newUser).length){
     // set id , _id as user
-    studentData.id = newUser.id;
-    studentData.user = newUser._id; 
+    payload.id = newUser.id;
+    payload.user = newUser._id; 
 
-    const newStudent = await Student.create(studentData);
+    const newStudent = await Student.create(payload);
     return newStudent;
   }
  
