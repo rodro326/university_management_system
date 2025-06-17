@@ -17,7 +17,7 @@ const createAcademicSemester = catchAsync(async (req, res) => {
   sendResponse(res,{
     statusCode:httpStatus.OK,
     success: true,
-    message:'Student Created Successfully',
+    message:'Academic Semester Created Successfully',
     data: result,
   })
 
