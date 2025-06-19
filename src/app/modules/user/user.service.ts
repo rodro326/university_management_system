@@ -11,7 +11,7 @@ import { generateStudentId } from "./user.utils";
 
 const createStudentToDB = async (password: string,payload: TStudent)=>{
 
-  
+
   // create a empty object
   const userData: Partial<TUser> ={};
 
@@ -61,6 +61,7 @@ const createStudentToDB = async (password: string,payload: TStudent)=>{
   }catch(err){
     await session.abortTransaction();
     await session.endSession();
+    throw new AppError(404,"Failed to create new student");
   }
 
   
