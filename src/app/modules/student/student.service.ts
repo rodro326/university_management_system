@@ -8,15 +8,53 @@ import { User } from "../user/user.model";
 
 
 
-const getAllStudentFromDB = async()=>{
-  const result = await Student.find()
+const getAllStudentFromDB = async(query:Record<string,unknown>)=>{
+
+  console.log('base query', query)
+  const queryObj = {...query};
+
+  let searchTerm = '';
+
+  const studentSearchableFields = ['email', 'name.firstName','presentAddress']
+
+  if(query?.searchTerm){
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field)=>({
+      [field]:{$regex: searchTerm, $options: 'i'},
+    }))
+  })
+
+  const includeFields = ['searchTerm','sort','limit'];
+
+  includeFields.forEach((el)=> delete queryObj[el]);
+  // console.log({query,queryObj})
+
+  const filterQuery = searchQuery
+  .find(queryObj)
   .populate('admissionSemester').populate({
     path:'academicDepartment',
     populate:{
       path:'academicFaculty',
     }
   });
-  return result;
+
+  let sort = '-createdAt'
+  if(query.sort){
+    sort = query.sort as string;
+  }
+  const sortQuery =  filterQuery.sort(sort)
+
+  let limit = 1;
+
+  if(query.limit){
+    limit = query.limit;
+  }
+
+  const limitQuery = await sortQuery.limit(limit);
+  return limitQuery ;
 }
 
 const updateStudentIntoDB = async(id: string, payload:Partial<TStudent>)=>{
