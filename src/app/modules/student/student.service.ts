@@ -27,7 +27,7 @@ const getAllStudentFromDB = async(query:Record<string,unknown>)=>{
     }))
   })
 
-  const includeFields = ['searchTerm','sort','limit'];
+  const includeFields = ['searchTerm','sort','limit','page'];
 
   includeFields.forEach((el)=> delete queryObj[el]);
   // console.log({query,queryObj})
@@ -47,14 +47,32 @@ const getAllStudentFromDB = async(query:Record<string,unknown>)=>{
   }
   const sortQuery =  filterQuery.sort(sort)
 
+  let page = 1;
   let limit = 1;
+  let skip = 0;
 
   if(query.limit){
-    limit = query.limit;
+    limit = Number(query.limit);
   }
 
-  const limitQuery = await sortQuery.limit(limit);
-  return limitQuery ;
+  if(query.page){
+    page = Number (query.page);
+    skip = (page-1)*limit;
+  }
+
+  const paginateQuery = sortQuery.skip(skip);
+
+  const limitQuery = await paginateQuery.limit(limit);
+
+  let fields = '-__v';
+
+  if(query.fields){
+    fields = (query.fields as string).split(',').join(' ');
+    console.log({fields})
+  }
+  const fieldQuery = limitQuery.select(fields);
+
+  return fieldQuery ;
 }
 
 const updateStudentIntoDB = async(id: string, payload:Partial<TStudent>)=>{
