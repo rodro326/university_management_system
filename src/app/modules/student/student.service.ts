@@ -25,7 +25,7 @@ const getAllStudentFromDB = async(query:Record<string,unknown>)=>{
     $or: studentSearchableFields.map((field)=>({
       [field]:{$regex: searchTerm, $options: 'i'},
     }))
-  })
+  });
 
   const includeFields = ['searchTerm','sort','limit','page','fields'];
 
@@ -48,7 +48,7 @@ const getAllStudentFromDB = async(query:Record<string,unknown>)=>{
   const sortQuery =  filterQuery.sort(sort)
 
   let page = 1;
-  let limit = 1;
+  let limit = 2;
   let skip = 0;
 
   if(query.limit){
