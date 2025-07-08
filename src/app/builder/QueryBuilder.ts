@@ -1,56 +1,63 @@
 import { FilterQuery, Query } from "mongoose"
 
 class QueryBuilder<T> {
-  public modelQuery :Query<T[],T>;
-  public query:Record<string,unknown>;
-  constructor(modelQuery :Query<T[],T>,query:Record<string,unknown>){
+  public modelQuery: Query<T[], T>;
+  public query: Record<string, unknown>;
+  constructor(modelQuery: Query<T[], T>, query: Record<string, unknown>) {
     this.modelQuery = modelQuery;
     this.query = query;
   };
 
 
-  search(searchableFields: string[]){
+  search(searchableFields: string[]) {
     const searchTerm = this?.query?.searchTerm;
-    if(searchTerm){
+    if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map((field)=>({
-          [field]:{$regex: searchTerm, $options: 'i'},
-        })as FilterQuery<T>,
+        $or: searchableFields.map((field) => ({
+          [field]: { $regex: searchTerm, $options: 'i' },
+        }) as FilterQuery<T>,
         )
       });
     }
     return this;
   }
 
-  filter(){
-    const queryObj = {...this.query};
+  filter() {
+    const queryObj = { ...this.query };
 
-    const includeFields = ['searchTerm','sort','limit','page','fields'];
+    const includeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 
-  includeFields.forEach((el)=> delete queryObj[el]);
-  this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
+    includeFields.forEach((el) => delete queryObj[el]);
+    this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
 
-  return this;
+    return this;
   }
 
-  sort(){
+  sort() {
     const sort = this?.query?.sort || '-createdAt';
     this.modelQuery = this.modelQuery.sort(sort as string);
     return this;
   }
 
-  paginate(){
-  let page = Number(this.query.page) || 1;
-  let limit = Number(this.query.limit) || 10;
-  let skip = (page -1) * limit;
+  paginate() {
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-  this.modelQuery = this.modelQuery.skip(skip).limit(limit);
-  return this;
-  }
-
-  field(){
-    const field = (this?.query?.field as string).split(',').join(' ') || '-__v';
-    this.modelQuery = this.modelQuery.select(field);
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
     return this;
   }
+
+  field() {
+    const fields = this.query.fields;
+    if (fields && typeof fields === 'string') {
+      this.modelQuery = this.modelQuery.select(fields.split(',').join(' '));
+    } else {
+      this.modelQuery = this.modelQuery.select('-__v');
+    }
+    return this;
+  }
+
+
 }
+export default QueryBuilder;
