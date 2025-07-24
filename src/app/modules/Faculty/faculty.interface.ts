@@ -3,16 +3,10 @@ import { Model, Types } from "mongoose";
 
 export type TGender = 'male' | 'female' | 'other';
 export type TBloodGroup =
-  | 'B+'
-  | 'O-'
   | 'A+'
-  | 'AB-'
-  | 'B+'
-  | 'A-'
-  | 'O-'
   | 'B-'
-  | 'AB+'
-  | 'O+';
+  | 'others'
+  ;
 
   export type TUserName = {
     firstName: string;

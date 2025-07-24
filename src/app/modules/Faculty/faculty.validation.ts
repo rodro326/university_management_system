@@ -5,10 +5,7 @@ const createUserNameValidationSchema = z.object({
   firstName: z
     .string()
     .min(1)
-    .max(20)
-    .refine((value) => /^[A-Z]/.test(value), {
-      message: 'First Name must start with a capital letter',
-    }),
+    .max(20),
   middleName: z.string(),
   lastName: z.string(),
 });
@@ -22,9 +19,8 @@ export const createFacultyValidationSchema = z.object({
       gender: z.enum([...Gender] as [string, ...string[]]),
       dateOfBirth: z.string().optional(),
       email: z.string().email(),
-      contactNo: z.string(),
-      emergencyContactNo: z.string(),
-      bloogGroup: z.enum([...BloodGroup] as [string, ...string[]]),
+      contactNo: z.string().optional(),
+      BloodGroup: z.enum(['A+', 'B+', 'others']),
       presentAddress: z.string(),
       permanentAddress: z.string(),
       academicDepartment: z.string(),

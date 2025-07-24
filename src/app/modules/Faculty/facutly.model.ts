@@ -23,7 +23,10 @@ const userNameSchema = new Schema<TUserName>({
 const FacultySchema = new Schema < TFaculty,FacultyModel> ({
 
   id: {type: String, required: [true,'Id is required'], unique: true},
-  
+  designation: {
+    type: String,
+    required: [true, 'Designation is required'],
+  },
   user:{
     type: Schema.Types.ObjectId,
     required: [true,'userId required'],
@@ -34,10 +37,7 @@ const FacultySchema = new Schema < TFaculty,FacultyModel> ({
     type:userNameSchema,
     required: [true,'name is required'],
   },
-  designation: {
-    type: String,
-    required: [true, 'Designation is required'],
-  },
+  
   gender:{
     type: String,
     enum:{
@@ -54,11 +54,10 @@ const FacultySchema = new Schema < TFaculty,FacultyModel> ({
   },
   contactNumber: {
     type: String,
-    required: true
   },
   BloodGroup:{
     type: String,
-    enum: ["A+", "B+", "other"],
+    enum: ["A+", "B+", "others"],
   },
   presentAddress:{
     type : String,
@@ -72,8 +71,7 @@ const FacultySchema = new Schema < TFaculty,FacultyModel> ({
   profileImg: {type: String},
   academicDepartment: {
     type: Schema.Types.ObjectId,
-    required: [true, 'User id is required'],
-    ref: 'User',
+    ref: 'AcademicDepartment',
   },
   isDeleted:{
     type:Boolean,
